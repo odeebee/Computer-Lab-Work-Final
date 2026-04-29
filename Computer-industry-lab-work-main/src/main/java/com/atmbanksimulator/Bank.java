@@ -158,10 +158,6 @@ public class Bank {
             if(account.getAccNumber().equals(accNum)){
                 return false;
             }
-            System.out.print(account.getAccNumber());
-            System.out.print(" ");
-            System.out.print(accNum);
-            System.out.println("");
         }
         return true;
     }
