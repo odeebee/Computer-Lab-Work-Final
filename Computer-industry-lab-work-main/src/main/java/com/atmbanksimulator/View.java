@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 // It does not know anything about business logic;
 // it only updates the display when notified by the UIModel.
 class View {
-    int H = 500;         // Height of window pixels
+    int H = 600;         // Height of window pixels
     int W = 500;         // Width  of window pixels
 
     Controller controller; // Reference to the Controller (part of the MVC setup)
@@ -60,6 +60,7 @@ class View {
 
         tfInput = new TextField();     // text field for numbers
         tfInput.setEditable(false);     // Read only (user can't type in)
+
         grid.add(tfInput, 0, 1);    // Add to GUI on second row
 
         taResult = new TextArea();         // text area for instructions, transaction results
@@ -78,9 +79,9 @@ class View {
 
         String buttonTexts[][] = {
                 {"7",    "8",  "9",  "",  "Dep",  ""},
-                {"4",    "5",  "6",  "",  "W/D",  ""},
+                {"4",    "5",  "6",  "",  "W/D",  "Sta"},
                 {"1",    "2",  "3",  "",  "Bal",  "Fin"},
-                {"CLR",  "0",  "",   "",  "Pas",     "Ent"} };
+                {"CLR",  "0",  "",   "",  "Pas",  "Ent"} };
 
         String buttonTextsStandard[][] = buttonTexts;
 
