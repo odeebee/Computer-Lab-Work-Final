@@ -40,6 +40,10 @@ public class Controller {
                 //Statement DONE
                 UIModel.processDeposit();
                 break;
+            case "Trf":
+               
+                UIModel.processTransfer();
+                break;
             case "Bal":
                 //Statement
                 UIModel.processBalance();
