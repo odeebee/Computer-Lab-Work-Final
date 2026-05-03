@@ -33,26 +33,18 @@ public class Controller {
                 UIModel.processEnter();
                 break;
             case "W/D":
-                //Statement DONE
                 UIModel.processWithdraw();
                 break;
             case "Dep":
-                //Statement DONE
                 UIModel.processDeposit();
                 break;
-            case "Trf":
-               
-                UIModel.processTransfer();
-                break;
             case "Bal":
-                //Statement
                 UIModel.processBalance();
                 break;
             case "Fin":
                 UIModel.processFinish();
                 break;
             case "Pas":
-                //Statement
                 UIModel.processPsswd();
                 break;
             case "Login":
@@ -60,9 +52,6 @@ public class Controller {
                 break;
             case "Create an account":
                 UIModel.createAccount();
-                break;
-            case "Sta":
-                UIModel.processStatement();
                 break;
             default:
                 UIModel.processUnknownKey(action);
