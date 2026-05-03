@@ -3,3 +3,5 @@ Action: Transfer. Balance after action: 294. Date of action: 2026-05-03T17:40:30
 Action: Transfer. Balance after action: 244. Date of action: 2026-05-03T17:40:43.421721100
 Action: Deposit. Amount deposited 50. Balance after action: 144. Date of action: 2026-05-03T18:19:29.840010400
 Action: Withdraw. Amount withdrawn 5. Balance after action: 139. Date of action: 2026-05-03T18:19:32.143262300
+Action: Transfer money. Balance after action: 609. Date of action: 2026-05-03T18:50:16.765699800
+Action: Transfer money. Balance after action: 599. Date of action: 2026-05-03T18:57:51.686103600

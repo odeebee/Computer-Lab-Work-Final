@@ -9,7 +9,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 class View {
-    int H = 650;
+    int H = 920;
     int W = 620;
 
     Controller controller;
@@ -81,7 +81,7 @@ class View {
                 {"4",   "5", "6", "W/D"},
                 {"1",   "2", "3", "Bal"},
                 {"CLR", "0", "Pas", "Ent"},
-                {"",    "",  "Fin", ""}
+                {"",    "Sta",  "Fin", "Trf"}
         };
 
         for (int row = 0; row < buttonTexts.length; row++) {
@@ -124,6 +124,13 @@ class View {
                             case "Pas":
                                 btn.setId("passwordButton");
                                 break;
+                            case "Sta":
+                                btn.setId("passwordButton");
+                                break;
+                            case "Trf":
+                                btn.setId("passwordButton");
+                                break;
+
                         }
                     }
 
