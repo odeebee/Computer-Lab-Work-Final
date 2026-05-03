@@ -2,6 +2,17 @@ package com.atmbanksimulator;
 
 // ===== 🧠 UIModel (Brain) =====
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.invoke.LambdaMetafactory;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import static java.lang.Integer.parseInt;
 
 // The UIModel represents all the actual content and functionality of the app
@@ -35,11 +46,15 @@ public class UIModel {
     private final String STATE_NEW_ACCOUNT_INT = "create_new_account_intrest";
     private final String STATE_NEW_ACCOUNT_LMT = "create_new_account_withdrawl_limit";
     private final String STATE_NEW_ACCOUNT_OVR = "create_new_account_overdraft_limit";
+    private final String STATE_TRANSFER_ACC_NUM = "transfer_acc_num";
+    private final String STATE_TRANSFER_AMOUNT = "transfer_amount";
 
     // Variables representing the state and data of the ATM UIModel
     private String state = STATE_ACCOUNT_NO;    // Current state of the ATM
     private String accNumber = "";         // Account number being typed
     private String accPasswd = "";         // Password being typed
+    BankAccount accountToTransferTo;
+    BankAccount accountTransferFrom;
 
     // Variables shown on the View display
     private String message;                // Message label text
@@ -56,7 +71,7 @@ public class UIModel {
     // - Clear the numberPadInput - numbers displayed in the TextField
     // - Display the welcome message and user instructions
     public void initialise() {
-        setState(STATE_ACCOUNT_NO);
+        setState(STATE_ACCOUNT_NO); 
         numberPadInput = "";
         message = "Welcome to the ATM";
         result = "Enter your account number\nFollowed by \"Ent\"";
@@ -119,6 +134,49 @@ public class UIModel {
         // The action depends on the current ATM state
         switch ( state )
         {
+            case STATE_TRANSFER_AMOUNT:
+                if(numberPadInput != ""){
+                    int amount = parseValidAmount(numberPadInput);
+                    numberPadInput = "";
+                    System.out.println(accountTransferFrom.getAccNumber() + " " + accountToTransferTo.getAccNumber() + " " + amount);
+                    accountTransferFrom.transferTo(accountToTransferTo, amount);
+                    updateStatement("Transfer money",amount);
+                    message = "Success!";
+                    //result = "Transfer successful\nyou have been logged out\nfor security reasons";
+
+                    setState(STATE_ACCOUNT_NO);
+                    numberPadInput = accountTransferFrom.getAccNumber();
+                    processEnter();
+                    numberPadInput = accountTransferFrom.getaccPasswd();
+                    processEnter();
+
+
+                    update();
+                }
+                break;
+            case STATE_TRANSFER_ACC_NUM:
+                System.out.println("Searching for account numbers");
+                String tempSearcher = numberPadInput;
+
+                if(numberPadInput != ""){
+                    for(BankAccount account : bank.getAccounts()){
+                        if(account == null){
+                            break;
+                        }
+                        System.out.println(account.getAccNumber()+" "+tempSearcher);
+                        if(account.getAccNumber().equals(tempSearcher)){
+                            System.out.println("Found!");
+                            accountToTransferTo = account;
+                            numberPadInput = "";
+                            message = "Enter amount";
+                            result = "Enter the amount\nof money you want to transfer";
+                            update();
+                            setState(STATE_TRANSFER_AMOUNT);
+                            break;
+                        }
+                    }
+                }
+                break;
             case STATE_NEW_ACCOUNT_OVR:
                 if(parseInt(numberPadInput) > 1001){
                     result = "Input is more than your account is allowed\nplease enter another ammount";
@@ -261,6 +319,7 @@ public class UIModel {
                     result = "Your password has now\nbeen changed.";
                     bank.changePasswd(bank.loggedInAccount.getaccPasswd(),numberPadInput,bank.loggedInAccount.getAccNumber());
                     numberPadInput = "";
+                    updateStatement("Password change",0);
                 }
                 break;
             case STATE_CHANGE_PASSWD:
@@ -403,6 +462,7 @@ public class UIModel {
                 if(bank.withdraw( amount )){
                     message = "Withdraw Successful";
                     result = "Withdrawn: " + numberPadInput;
+                    updateStatement("Withdraw",amount);
                 }
                 else{
                     message = "Withdraw Failed: Insufficient Funds";
@@ -439,6 +499,7 @@ public class UIModel {
                 bank.deposit( amount );
                 message = "Deposit Successful";
                 result = "Deposited: " + numberPadInput;
+                updateStatement("Deposit",amount);
             }
             else {
                 message = "Invaild Amount";
@@ -451,10 +512,62 @@ public class UIModel {
         }
         update();
     }
+    public void processTransfer(){
+        accountTransferFrom = bank.getCurrentAccount();
+        if (bank.getAccounts().length < 2) {
+            message = "No other accounts available";
+            update();
+            return;
+        }
+        if(bank.getCurrentAccount() != null){
+            numberPadInput = "";
+            message = "Enter target account number";
+            result = "Enter target account number\nand press enter.";
+            update();
+            setState(STATE_TRANSFER_ACC_NUM);
+            System.out.println("Set new state");
+        }
 
-    // Handle the Finish button:
-    // - If the user is logged in, log out
-    // - Otherwise, reset the ATM and display an error message
+    }
+
+//  public void processTransfer() {
+//
+//    if (state.equals(STATE_LOGGED_IN)) {
+//
+//        int amount = parseValidAmount(numberPadInput);
+//
+//        if (amount > 0) {
+//
+//    if (bank.getAccounts().length < 2) {
+//        message = "No other accounts available";
+//        update();
+//        return;
+//    }
+//
+//    message = "Enter target account number";
+//    result = "Amount: " + amount;
+//
+//    BankAccount target = bank.getAccounts()[1];
+//
+//    bank.getCurrentAccount().transferTo(target, amount);
+//            updateStatement("Transfer", amount);
+//
+//            message = "Transfer successful";
+//
+//        } else {
+//            message = "Invalid amount";
+//        }
+//
+//        numberPadInput = "";
+//
+//    } else {
+//        reset("You are not logged in");
+//    }
+//
+//    update();
+//}    // Handle the Finish button:
+//    // - If the user is logged in, log out
+//    // - Otherwise, reset the ATM and display an error message
     public void processFinish() {
         if (state.equals(STATE_LOGGED_IN) ) {
             reset("Thank you for using the Bank ATM");
@@ -524,6 +637,52 @@ public class UIModel {
             setState(STATE_ACCOUNT_NO);
 
         }
+    }
+
+    public void processStatement(){
+        Path path = Paths.get("Statements/"+bank.loggedInAccount.getAccNumber()+".txt");
+        result = "";
+        try {
+            List<String> lines = Files.readAllLines(path);
+            for(String line : lines){
+                result = result + line + "\n";
+            }
+            update();
+        } catch (IOException e) {
+            result = "No statement found.\nPlease make some transactions before\nrequesting a statement.";
+            //throw new RuntimeException(e);
+        }
+        update();
+    }
+
+    private void updateStatement(String action, int ammount){
+        System.out.println(bank.loggedInAccount);
+        LocalDateTime now = LocalDateTime.now();
+        String actionLine = "Action: " + action;
+        switch (action){
+            case("Withdraw"):
+                actionLine = actionLine + ". Amount withdrawn " + ammount;
+                break;
+            case("Deposit"):
+                actionLine = actionLine + ". Amount deposited " + ammount;
+                break;
+            //Add transfer when it gets added.
+        }
+        actionLine = actionLine + ". Balance after action: " + bank.loggedInAccount.getBalance() + ". Date of action: " + now;
+        if(action == "Password change"){
+            actionLine = "Password changed. " + "Date of action: " + now;
+        }
+        //Create a file for account if none exists.
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("Statements/"+bank.loggedInAccount.getAccNumber()+".txt",true));
+            writer.write(actionLine);
+            writer.newLine();
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
 

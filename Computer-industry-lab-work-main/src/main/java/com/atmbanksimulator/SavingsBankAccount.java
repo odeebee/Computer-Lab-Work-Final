@@ -62,4 +62,32 @@ public class SavingsBankAccount extends BankAccount{
     public int getIntrestRate(){
         return intrestRate;
     }
+    @Override
+    public boolean transferTo(BankAccount target, int amount) {
+
+        // 1. check invalid amount
+        if (amount <= 0) {
+            System.out.println("Invalid amount");
+            return false;
+        }
+
+        // 2. check enough balance
+        if (this.balance < amount) {
+            System.out.println("Not enough money");
+            return false;
+        }
+
+        // 3. prevent sending to same account
+        if (this == target) {
+            System.out.println("Cannot transfer to same account");
+            return false;
+        }
+
+        // 4. move money
+        this.withdraw(amount);
+        target.deposit(amount);
+
+        System.out.println("Transfer successful");
+        return true;
+    }
 }

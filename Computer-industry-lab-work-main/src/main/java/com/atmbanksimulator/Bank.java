@@ -2,6 +2,8 @@ package com.atmbanksimulator;
 
 // ===== 📚🌐Bank (Domain / Service / Business Logic) =====
 
+import java.lang.reflect.Array;
+
 // Bank class: a simple implementation of a bank, containing a list of bank accounts
 // and has a currently logged-in account (loggedInAccount).
 public class Bank {
@@ -158,11 +160,15 @@ public class Bank {
             if(account.getAccNumber().equals(accNum)){
                 return false;
             }
-            System.out.print(account.getAccNumber());
-            System.out.print(" ");
-            System.out.print(accNum);
-            System.out.println("");
         }
         return true;
+    }
+
+    public BankAccount getCurrentAccount(){
+        return loggedInAccount;
+    }
+
+    public BankAccount[] getAccounts(){
+        return accounts;
     }
 }
