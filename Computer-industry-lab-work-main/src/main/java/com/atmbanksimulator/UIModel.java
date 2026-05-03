@@ -67,7 +67,7 @@ public class UIModel {
     // - Clear the numberPadInput - numbers displayed in the TextField
     // - Display the welcome message and user instructions
     public void initialise() {
-        setState(STATE_ACCOUNT_NO);
+        setState(STATE_ACCOUNT_NO); 
         numberPadInput = "";
         message = "Welcome to the ATM";
         result = "Enter your account number\nFollowed by \"Ent\"";
@@ -465,8 +465,42 @@ public class UIModel {
         }
         update();
     }
+  public void processTransfer() {
 
-    // Handle the Finish button:
+    if (state.equals(STATE_LOGGED_IN)) {
+
+        int amount = parseValidAmount(numberPadInput);
+
+        if (amount > 0) {
+
+    if (bank.getAccounts().size() < 2) {
+        message = "No other accounts available";
+        update();
+        return;
+    }
+
+    message = "Enter target account number";
+    result = "Amount: " + amount;
+
+    BankAccount target = bank.getAccounts().get(1);
+
+    bank.getCurrentAccount().transferTo(target, amount);
+            updateStatement("Transfer", amount);
+
+            message = "Transfer successful";
+
+        } else {
+            message = "Invalid amount";
+        }
+
+        numberPadInput = "";
+
+    } else {
+        reset("You are not logged in");
+    }
+
+    update();
+}    // Handle the Finish button:
     // - If the user is logged in, log out
     // - Otherwise, reset the ATM and display an error message
     public void processFinish() {
